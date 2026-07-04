@@ -1,0 +1,5 @@
+.DS_Store
+.claude/
+assets/*.pdf
+crossword-book/
+google-apps-script/
