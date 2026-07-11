@@ -41,6 +41,47 @@ if (form && statusText) {
   });
 }
 
+// Newsletter signup. NEWSLETTER_FORM_ACTION must be set to the email
+// provider's form endpoint (e.g. Kit/ConvertKit form action URL) before
+// the form can subscribe anyone; until then submissions fall back to the
+// Skool community link below.
+const NEWSLETTER_FORM_ACTION = "";
+const SKOOL_URL = "https://www.skool.com/ai-for-educators-3099";
+
+const newsletterForm = document.getElementById("newsletter-form");
+const newsletterStatus = document.getElementById("newsletter-status");
+
+if (newsletterForm && newsletterStatus) {
+  newsletterForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = new FormData(newsletterForm).get("email")?.toString().trim() || "";
+
+    if (!NEWSLETTER_FORM_ACTION) {
+      newsletterStatus.innerHTML =
+        'Email signup opens very soon — in the meantime, everything lives in the free ' +
+        '<a href="' + SKOOL_URL + '" target="_blank" rel="noreferrer">AI for Educators community</a>.';
+      return;
+    }
+
+    newsletterStatus.textContent = "Signing you up...";
+
+    try {
+      await fetch(NEWSLETTER_FORM_ACTION, {
+        method: "POST",
+        mode: "no-cors",
+        body: new URLSearchParams({ email }),
+      });
+      newsletterForm.reset();
+      newsletterStatus.textContent =
+        "You're in! Check your inbox for a welcome email.";
+    } catch (error) {
+      newsletterStatus.textContent =
+        "Something went wrong. Please email hunter.hickman@hickmanconsultingai.com directly.";
+    }
+  });
+}
+
 const modelRoot = document.getElementById("solution-model");
 
 if (modelRoot) {

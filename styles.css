@@ -205,6 +205,75 @@ button {
   margin-top: 1.8rem;
 }
 
+/* ---------- Newsletter signup ---------- */
+
+.signup-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.8rem;
+  max-width: 520px;
+}
+
+.signup-form input[type="email"] {
+  flex: 1 1 240px;
+  min-height: 50px;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(20, 33, 61, 0.25);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.signup-form input[type="email"]:focus {
+  outline: 2px solid rgba(75, 136, 182, 0.35);
+  border-color: var(--accent);
+}
+
+.signup-micro {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Bio strip ---------- */
+
+.bio-strip {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.bio-thumb {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.bio-thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bio-more {
+  margin: 0.8rem 0 0;
+}
+
 /* ---------- Buttons ---------- */
 
 .button {
@@ -709,6 +778,14 @@ button.button {
   .trust-strip,
   .cards {
     grid-template-columns: 1fr;
+  }
+
+  .bio-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .bio-thumb {
+    max-width: 220px;
   }
 
   .site-header {
