@@ -69,7 +69,9 @@ body {
 }
 
 .brand-copy strong {
-  font-size: 1rem;
+  font-family: "Sora", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.15;
 }
 
 .brand-copy span {
