@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carousel Generator — Hickman Consulting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #14213d;
+      --deep:      #244f88;
+      --blue:      #4b88b6;
+      --soft:      #8fb8d3;
+      --muted:     #55657e;
+      --silver:    #c7d1d8;
+      --wash:      #eef5f9;
+      --shadow:    0 4px 24px rgba(20,33,61,.12);
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--wash);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .app-header {
+      flex-shrink: 0;
+      height: 58px;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 14px;
+      z-index: 20;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .header-brand img {
+      height: 30px;
+      width: auto;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .header-brand-name {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .header-sep { width: 1px; height: 22px; background: rgba(255,255,255,.18); }
+
+    .header-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,.6);
+    }
+
+    .header-spacer { flex: 1; }
+
+    .platform-select {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .platform-select option { background: var(--ink); }
+
+    .btn-export {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: background 150ms;
+      white-space: nowrap;
+    }
+    .btn-export:hover { background: var(--deep); }
+
+    /* ── MAIN LAYOUT ────────────────────────────── */
+    .app-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      overflow: hidden;
+    }
+
+    /* ── EDITOR PANEL ───────────────────────────── */
+    .editor-panel {
+      background: #fff;
+      border-right: 1px solid var(--silver);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      flex-shrink: 0;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--silver);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-add {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 13px;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+
+    .btn-add-cover   { background: #dce8f5; color: var(--deep); }
+    .btn-add-content { background: #d5ede3; color: #1a5c3a; }
+    .btn-add-cta     { background: #fde8d8; color: #8a3a0a; }
+    .btn-add-cover:hover   { background: #c9ddf0; }
+    .btn-add-content:hover { background: #c2e4d3; }
+    .btn-add-cta:hover     { background: #f9d9c4; }
+
+    .editor-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .slides-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slides-list::-webkit-scrollbar { width: 4px; }
+    .slides-list::-webkit-scrollbar-track { background: transparent; }
+    .slides-list::-webkit-scrollbar-thumb { background: var(--silver); border-radius: 4px; }
+
+    /* ── SLIDE CARD ─────────────────────────────── */
+    .slide-card {
+      background: var(--wash);
+      border: 2px solid transparent;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 150ms;
+    }
+    .slide-card.active { border-color: var(--blue); background: #fff; }
+
+    .slide-card-header {
+      display: flex;
+      align-items: center;
+      padding: 9px 12px;
+      background: #fff;
+      gap: 8px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--silver);
+      user-select: none;
+    }
+    .slide-card:not(.active) .slide-card-header { background: var(--wash); }
+
+    .slide-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--silver);
+      border-radius: 6px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+    }
+
+    .slide-type-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .badge-cover   { background: #dce8f5; color: var(--deep); }
+    .badge-content { background: #d5ede3; color: #1a5c3a; }
+    .badge-cta     { background: #fde8d8; color: #8a3a0a; }
+
+    .slide-headline-preview {
+      font-size: 12px;
+      color: var(--muted);
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid var(--silver);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 110ms;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover { background: var(--wash); color: var(--ink); }
+    .btn-icon:disabled { opacity: .35; cursor: default; }
+    .btn-icon.del:hover { background: #fff0f0; color: #c0392b; border-color: #f5c6c6; }
+
+    .slide-card-body {
+      display: none;
+      padding: 12px;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .slide-card.active .slide-card-body { display: flex; }
+
+    /* ── FORM ELEMENTS ──────────────────────────── */
+    .fgroup {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .flabel {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .finput, .ftextarea {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--silver);
+      border-radius: 8px;
+      padding: 8px 10px;
+      width: 100%;
+      transition: border-color 120ms;
+    }
+    .slide-card:not(.active) .finput,
+    .slide-card:not(.active) .ftextarea { background: var(--wash); }
+
+    .finput:focus, .ftextarea:focus { outline: none; border-color: var(--blue); }
+    .ftextarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+
+    .section-sep {
+      height: 1px;
+      background: var(--silver);
+      margin: 2px 0;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .toggle-row input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; }
+
+    /* ── COLOR SWATCHES ─────────────────────────── */
+    .swatch-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 120ms;
+    }
+    .swatch:hover { transform: scale(1.18); }
+    .swatch.on  { box-shadow: 0 0 0 2px var(--blue), 0 0 0 4px #fff; }
+    .swatch.light-border { border-color: var(--silver); }
+
+    .swatch-custom {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px dashed var(--silver);
+      background: #fff;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      transition: transform 120ms;
+    }
+    .swatch-custom:hover { transform: scale(1.18); }
+    .swatch-custom input[type="color"] {
+      position: absolute;
+      inset: -6px;
+      width: calc(100% + 12px);
+      height: calc(100% + 12px);
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+    }
+
+    /* ── IMAGE UPLOAD ───────────────────────────── */
+    .upload-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      background: rgba(75,136,182,.07);
+      border: 1px dashed var(--blue);
+      border-radius: 9px;
+      padding: 9px;
+      cursor: pointer;
+      transition: background 120ms;
+      width: 100%;
+    }
+    .upload-label:hover { background: rgba(75,136,182,.13); }
+
+    .upload-preview-wrap {
+      position: relative;
+      border-radius: 9px;
+      overflow: hidden;
+    }
+    .upload-preview-wrap img {
+      width: 100%;
+      height: 72px;
+      object-fit: cover;
+      display: block;
+    }
+    .btn-clear-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.6);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── PREVIEW PANEL ──────────────────────────── */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+      background: #cdd5de;
+      overflow: hidden;
+    }
+
+    .preview-topbar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      background: rgba(255,255,255,.45);
+      border-bottom: 1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(6px);
+    }
+
+    .btn-nav {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid rgba(20,33,61,.2);
+      background: #fff;
+      color: var(--ink);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms;
+    }
+    .btn-nav:hover { background: var(--wash); }
+    .btn-nav:disabled { opacity: .3; cursor: default; }
+
+    .preview-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .preview-topbar-spacer { flex: 1; }
+
+    .preview-dim-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .preview-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-shadow-box {
+      box-shadow: 0 8px 44px rgba(20,33,61,.3);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    #preview-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+    }
+
+    .preview-thumbs {
+      flex-shrink: 0;
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      overflow-x: auto;
+      background: rgba(255,255,255,.3);
+      border-top: 1px solid rgba(255,255,255,.6);
+      min-height: 66px;
+      align-items: center;
+    }
+
+    .preview-thumbs::-webkit-scrollbar { height: 4px; }
+    .preview-thumbs::-webkit-scrollbar-track { background: transparent; }
+    .preview-thumbs::-webkit-scrollbar-thumb { background: var(--silver); border-radius: 4px; }
+
+    .thumb {
+      border-radius: 5px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: border-color 120ms;
+    }
+    .thumb.active { border-color: var(--blue); }
+    .thumb-inner {
+      transform-origin: top left;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* ── OFF-SCREEN RENDER STAGE ────────────────── */
+    #render-stage {
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      overflow: hidden;
+    }
+
+    /* ── EXPORT OVERLAY ─────────────────────────── */
+    .export-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,33,61,.72);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    .export-overlay.hidden { display: none; }
+
+    .export-modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 44px;
+      text-align: center;
+      box-shadow: 0 22px 60px rgba(20,33,61,.25);
+      max-width: 320px;
+      width: 90%;
+    }
+
+    .export-spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--silver);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .export-modal h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .export-modal p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .export-bar-wrap {
+      width: 100%;
+      height: 5px;
+      background: var(--wash);
+      border-radius: 99px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .export-bar {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 99px;
+      transition: width .3s ease;
+      width: 0%;
+    }
+
+    /* ── EMPTY STATE ────────────────────────────── */
+    .empty-hint {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--muted);
+    }
+    .empty-hint p { font-size: 13px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────── -->
+<header class="app-header">
+  <a class="header-brand" href="index.html">
+    <img id="header-logo-img" src="assets/AI%20CLASSROOM%20PRO%20%282048%20x%201152%20px%29%20%28180%20x%20180%20px%29%281%29.png" alt="Logo" />
+    <span class="header-brand-name">Hickman Consulting</span>
+  </a>
+  <div class="header-sep"></div>
+  <span class="header-subtitle">Carousel Generator</span>
+  <div class="header-spacer"></div>
+  <select class="platform-select" id="platform-select">
+    <option value="square">Square 1:1 — 1080 × 1080</option>
+    <option value="portrait">Portrait 4:5 — 1080 × 1350</option>
+    <option value="landscape">Landscape 16:9 — 1200 × 675</option>
+  </select>
+  <button class="btn-export" id="btn-export">&#8659; Export All PNGs</button>
+</header>
+
+<!-- ── APP BODY ───────────────────────────────────── -->
+<div class="app-body">
+
+  <!-- EDITOR PANEL -->
+  <aside class="editor-panel">
+    <div class="editor-toolbar">
+      <button class="btn-add btn-add-cover"   id="btn-add-cover">+ Cover</button>
+      <button class="btn-add btn-add-content" id="btn-add-content">+ Content</button>
+      <button class="btn-add btn-add-cta"     id="btn-add-cta">+ CTA</button>
+      <span class="editor-count" id="editor-count">0 slides</span>
+    </div>
+    <div class="slides-list" id="slides-list">
+      <div class="empty-hint">
+        <strong>No slides yet.</strong>
+        <p>Click a button above to add your first slide.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- PREVIEW PANEL -->
+  <main class="preview-panel">
+    <div class="preview-topbar">
+      <button class="btn-nav" id="btn-prev">&#8592;</button>
+      <span class="preview-counter" id="preview-counter">— / —</span>
+      <button class="btn-nav" id="btn-next">&#8594;</button>
+      <div class="preview-topbar-spacer"></div>
+      <span class="preview-dim-label" id="preview-dim-label">1080 × 1080</span>
+    </div>
+    <div class="preview-main" id="preview-main">
+      <div class="preview-shadow-box" id="preview-shadow-box">
+        <div id="preview-inner"></div>
+      </div>
+    </div>
+    <div class="preview-thumbs" id="preview-thumbs"></div>
+  </main>
+
+</div>
+
+<!-- OFF-SCREEN RENDER STAGE -->
+<div id="render-stage"></div>
+
+<!-- EXPORT OVERLAY -->
+<div class="export-overlay hidden" id="export-overlay">
+  <div class="export-modal">
+    <div class="export-spinner"></div>
+    <h3>Exporting slides</h3>
+    <p id="export-status-text">Preparing...</p>
+    <div class="export-bar-wrap">
+      <div class="export-bar" id="export-bar"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let slides          = [];
+let activePlatform  = 'square';
+let activeIdx       = 0;
+let logoDataUrl     = null;
+let fontsReady      = false;
+
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const PLATFORMS = {
+  square:    { w: 1080, h: 1080, label: '1080 × 1080' },
+  portrait:  { w: 1080, h: 1350, label: '1080 × 1350' },
+  landscape: { w: 1200, h: 675,  label: '1200 × 675'  },
+};
+
+const PALETTE = [
+  { hex: '#14213d', name: 'Navy'      },
+  { hex: '#244f88', name: 'Deep Blue' },
+  { hex: '#4b88b6', name: 'Blue'      },
+  { hex: '#8fb8d3', name: 'Soft Blue' },
+  { hex: '#55657e', name: 'Slate'     },
+  { hex: '#c7d1d8', name: 'Silver'    },
+  { hex: '#eef5f9', name: 'Wash'      },
+  { hex: '#ffffff', name: 'White'     },
+];
+
+const LIGHT_BG_HEX = new Set(['#eef5f9', '#c7d1d8', '#ffffff']);
+
+// ════════════════════════════════════════════════════════════
+// SLIDE FACTORY
+// ════════════════════════════════════════════════════════════
+function mkId() {
+  return 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+}
+
+function newSlide(type) {
+  const bgColor = type === 'cover' ? '#14213d' : type === 'cta' ? '#244f88' : '#4b88b6';
+  const base = {
+    id: mkId(), type,
+    bgType: 'color', bgColor,
+    bgImageDataUrl: null,
+    textColorScheme: 'light',
+    showSlideNumber: true,
+  };
+  if (type === 'cover') return {
+    ...base,
+    headline: '', subtitle: '',
+    authorName: 'Hunter Hickman', showLogo: true,
+  };
+  if (type === 'content') return {
+    ...base,
+    contentTitle: '', contentBody: '', bulletsMode: true,
+  };
+  // cta
+  return {
+    ...base,
+    ctaHeadline: '', ctaSubheading: '',
+    contactEmail: 'hunter.hickman@hickmanconsultingai.com',
+    contactLinkedIn: 'linkedin.com/in/hunter-hickman-m-s-2b501383',
+    contactExtra: '',
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function px(v, s) { return Math.round(v * s) + 'px'; }
+
+function slideById(id) { return slides.find(s => s.id === id); }
+
+// ════════════════════════════════════════════════════════════
+// SLIDE HTML RENDERER  (used for render-stage, preview, thumbs)
+// All sizes in absolute px — no rem/vw/em
+// ════════════════════════════════════════════════════════════
+function slideHTML(slide, idx, total, platform) {
+  const { w, h } = platform;
+  const scale     = Math.min(w, h) / 1080;
+  const pad       = Math.round(76 * scale);
+  const isLight   = slide.textColorScheme === 'light';
+  const textCol   = isLight ? '#ffffff' : '#14213d';
+  const mutedCol  = isLight ? 'rgba(255,255,255,.68)' : 'rgba(20,33,61,.55)';
+  const accentCol = isLight ? '#8fb8d3' : '#4b88b6';
+
+  // Background
+  const bgCss = (slide.bgType === 'image' && slide.bgImageDataUrl)
+    ? `background-image:url('${slide.bgImageDataUrl}');background-size:cover;background-position:center;`
+    : `background-color:${slide.bgColor};`;
+
+  // Image overlay for readability
+  const overlayHTML = (slide.bgType === 'image' && slide.bgImageDataUrl)
+    ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.38);"></div>`
+    : '';
+
+  // Slide number badge
+  const numHTML = (slide.showSlideNumber && total > 1)
+    ? `<div style="position:absolute;bottom:${px(34, scale)};right:${px(42, scale)};
+         font-family:'Space Grotesk',sans-serif;font-size:${px(19, scale)};
+         font-weight:500;color:${textCol};opacity:.5;letter-spacing:.05em;">
+         ${idx + 1}&thinsp;/&thinsp;${total}
+       </div>`
+    : '';
+
+  // Logo img tag (used in cover + cta)
+  const logoTag = logoDataUrl
+    ? `<img src="${logoDataUrl}" style="height:${px(82, scale)};width:auto;object-fit:contain;display:block;" />`
+    : '';
+
+  let content = '';
+
+  // ── COVER ──
+  if (slide.type === 'cover') {
+    content = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+           width:100%;height:100%;padding:${pad}px;box-sizing:border-box;text-align:center;
+           position:relative;z-index:1;">
+        ${(slide.showLogo && logoTag)
+          ? `<div style="margin-bottom:${px(34, scale)};">${logoTag}</div>`
+          : ''}
+        <h1 style="font-family:'Sora',sans-serif;font-size:${px(76, scale)};font-weight:800;
+             color:${textCol};margin:0 0 ${px(20, scale)};line-height:1.1;
+             max-width:${Math.round(880 * scale)}px;word-break:break-word;">
+          ${esc(slide.headline || 'Your Headline Here')}
+        </h1>
+        ${slide.subtitle
+          ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:${px(30, scale)};
+               font-weight:400;color:${mutedCol};margin:0 0 ${px(28, scale)};line-height:1.45;
+               max-width:${Math.round(760 * scale)}px;word-break:break-word;">
+               ${esc(slide.subtitle)}
+             </p>`
+          : ''}
+        ${slide.authorName
+          ? `<div style="display:flex;align-items:center;gap:${px(13, scale)};">
+               <div style="width:${px(34, scale)};height:2px;background:${textCol};opacity:.3;"></div>
+               <p style="font-family:'Space Grotesk',sans-serif;font-size:${px(21, scale)};
+                  font-weight:500;color:${mutedCol};margin:0;letter-spacing:.04em;">
+                  ${esc(slide.authorName)}
+               </p>
+               <div style="width:${px(34, scale)};height:2px;background:${textCol};opacity:.3;"></div>
+             </div>`
+          : ''}
+      </div>`;
+  }
+
+  // ── CONTENT ──
+  else if (slide.type === 'content') {
+    const lines = (slide.contentBody || '').split('\n').filter(l => l.trim());
+    let bodyHTML;
+    if (!lines.length) {
+      bodyHTML = `<p style="font-family:'Space Grotesk',sans-serif;font-size:${px(27, scale)};
+                    color:${mutedCol};margin:0;font-style:italic;">
+                    Add body text in the editor...
+                  </p>`;
+    } else if (slide.bulletsMode) {
+      bodyHTML = `<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:${px(14, scale)};">
+        ${lines.map(l => `
+          <li style="display:flex;gap:${px(13, scale)};font-family:'Space Grotesk',sans-serif;
+               font-size:${px(27, scale)};font-weight:400;color:${textCol};line-height:1.55;
+               word-break:break-word;">
+            <span style="flex-shrink:0;margin-top:${px(9, scale)};width:${px(7, scale)};
+               height:${px(7, scale)};border-radius:50%;background:${accentCol};display:inline-block;">
+            </span>
+            ${esc(l)}
+          </li>`).join('')}
+      </ul>`;
+    } else {
+      bodyHTML = `<p style="font-family:'Space Grotesk',sans-serif;font-size:${px(27, scale)};
+                    font-weight:400;color:${textCol};line-height:1.65;margin:0;
+                    word-break:break-word;white-space:pre-wrap;">
+                    ${esc(slide.contentBody || '')}
+                  </p>`;
+    }
+    content = `
+      <div style="display:flex;flex-direction:column;justify-content:center;
+           width:100%;height:100%;padding:${pad}px;box-sizing:border-box;
+           position:relative;z-index:1;">
+        ${slide.contentTitle
+          ? `<h2 style="font-family:'Sora',sans-serif;font-size:${px(54, scale)};font-weight:700;
+                color:${textCol};margin:0 0 ${px(18, scale)};line-height:1.15;word-break:break-word;">
+                ${esc(slide.contentTitle)}
+              </h2>
+              <div style="width:${px(54, scale)};height:${px(4, scale)};background:${accentCol};
+                border-radius:99px;margin-bottom:${px(26, scale)};"></div>`
+          : ''}
+        ${bodyHTML}
+      </div>`;
+  }
+
+  // ── CTA ──
+  else {
+    const contacts = [
+      slide.contactEmail    && esc(slide.contactEmail),
+      slide.contactLinkedIn && esc(slide.contactLinkedIn),
+      slide.contactExtra    && esc(slide.contactExtra),
+    ].filter(Boolean);
+
+    content = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+           width:100%;height:100%;padding:${pad}px;box-sizing:border-box;text-align:center;
+           position:relative;z-index:1;">
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:${px(13, scale)};font-weight:700;
+             color:${mutedCol};letter-spacing:.18em;text-transform:uppercase;
+             margin:0 0 ${px(18, scale)};">Let&rsquo;s Connect</p>
+        ${slide.ctaHeadline
+          ? `<h2 style="font-family:'Sora',sans-serif;font-size:${px(62, scale)};font-weight:800;
+                color:${textCol};margin:0 0 ${px(16, scale)};line-height:1.1;
+                max-width:${Math.round(860 * scale)}px;word-break:break-word;">
+                ${esc(slide.ctaHeadline)}
+              </h2>`
+          : ''}
+        ${slide.ctaSubheading
+          ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:${px(27, scale)};
+               font-weight:400;color:${mutedCol};margin:0 0 ${px(34, scale)};line-height:1.45;
+               max-width:${Math.round(730 * scale)}px;word-break:break-word;">
+               ${esc(slide.ctaSubheading)}
+             </p>`
+          : ''}
+        ${contacts.length
+          ? `<div style="width:${px(56, scale)};height:2px;background:${textCol};
+               opacity:.22;margin:0 auto ${px(26, scale)};"></div>
+             <div style="display:flex;flex-direction:column;gap:${px(9, scale)};">
+               ${contacts.map(c => `
+                 <p style="font-family:'Space Grotesk',sans-serif;font-size:${px(23, scale)};
+                    font-weight:500;color:${mutedCol};margin:0;">${c}</p>`).join('')}
+             </div>`
+          : ''}
+        ${logoTag
+          ? `<div style="position:absolute;bottom:${pad}px;right:${pad}px;">${logoTag}</div>`
+          : ''}
+      </div>`;
+  }
+
+  return `<div style="position:relative;width:${w}px;height:${h}px;overflow:hidden;${bgCss}">
+    ${overlayHTML}
+    ${content}
+    ${numHTML}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER STAGE + PREVIEW
+// ════════════════════════════════════════════════════════════
+const renderStage = document.getElementById('render-stage');
+const previewInner = document.getElementById('preview-inner');
+const shadowBox = document.getElementById('preview-shadow-box');
+const previewMain = document.getElementById('preview-main');
+
+function updatePreview() {
+  if (!slides.length) {
+    previewInner.innerHTML = '';
+    shadowBox.style.width = '0';
+    shadowBox.style.height = '0';
+    document.getElementById('preview-counter').textContent = '— / —';
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-next').disabled = true;
+    document.getElementById('preview-thumbs').innerHTML = '';
+    return;
+  }
+
+  const slide    = slides[activeIdx];
+  const platform = PLATFORMS[activePlatform];
+  const { w, h } = platform;
+  const html     = slideHTML(slide, activeIdx, slides.length, platform);
+
+  // Update render stage
+  renderStage.style.width  = w + 'px';
+  renderStage.style.height = h + 'px';
+  renderStage.innerHTML    = html;
+
+  // Scale preview to fit available space
+  const rect   = previewMain.getBoundingClientRect();
+  const scaleX = (rect.width  - 48) / w;
+  const scaleY = (rect.height - 48) / h;
+  const s      = Math.min(scaleX, scaleY, 1);
+
+  shadowBox.style.width  = Math.round(w * s) + 'px';
+  shadowBox.style.height = Math.round(h * s) + 'px';
+
+  previewInner.style.width           = w + 'px';
+  previewInner.style.height          = h + 'px';
+  previewInner.style.transform       = `scale(${s})`;
+  previewInner.innerHTML             = html;
+
+  // Nav controls
+  document.getElementById('preview-counter').textContent = `${activeIdx + 1} / ${slides.length}`;
+  document.getElementById('btn-prev').disabled = activeIdx === 0;
+  document.getElementById('btn-next').disabled = activeIdx === slides.length - 1;
+  document.getElementById('preview-dim-label').textContent = platform.label;
+
+  renderThumbs();
+}
+
+// ════════════════════════════════════════════════════════════
+// THUMBNAIL STRIP
+// ════════════════════════════════════════════════════════════
+function renderThumbs() {
+  const el = document.getElementById('preview-thumbs');
+  if (!slides.length) { el.innerHTML = ''; return; }
+
+  const platform  = PLATFORMS[activePlatform];
+  const thumbH    = 46;
+  const thumbW    = Math.round(platform.w * (thumbH / platform.h));
+  const ts        = thumbH / platform.h;
+
+  el.innerHTML = slides.map((slide, i) => {
+    const html = slideHTML(slide, i, slides.length, platform);
+    return `<div class="thumb ${i === activeIdx ? 'active' : ''}"
+                 data-thumb="${i}"
+                 style="width:${thumbW}px;height:${thumbH}px;"
+                 title="Slide ${i + 1}">
+              <div class="thumb-inner"
+                   style="width:${platform.w}px;height:${platform.h}px;
+                          transform:scale(${ts});">
+                ${html}
+              </div>
+            </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// EDITOR PANEL
+// ════════════════════════════════════════════════════════════
+function renderEditor() {
+  const list  = document.getElementById('slides-list');
+  const count = document.getElementById('editor-count');
+
+  count.textContent = slides.length === 1 ? '1 slide' : `${slides.length} slides`;
+
+  if (!slides.length) {
+    list.innerHTML = `<div class="empty-hint"><strong>No slides yet.</strong>
+      <p>Click a button above to add your first slide.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = slides.map((slide, i) => slideCard(slide, i)).join('');
+
+  // Scroll active card into view
+  const active = list.querySelector('.slide-card.active');
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function slideCard(slide, i) {
+  const isActive = i === activeIdx;
+  const badge    = { cover: 'Cover', content: 'Content', cta: 'CTA' }[slide.type];
+  const preview  = (slide.headline || slide.contentTitle || slide.ctaHeadline || '').slice(0, 36);
+
+  const swatches = PALETTE.map(c => `
+    <div class="swatch ${LIGHT_BG_HEX.has(c.hex) ? 'light-border' : ''} ${slide.bgColor === c.hex ? 'on' : ''}"
+         style="background:${c.hex};"
+         data-act="set-color" data-sid="${slide.id}" data-color="${c.hex}"
+         title="${c.name}"></div>`).join('');
+
+  const imgSection = slide.bgImageDataUrl
+    ? `<div class="upload-preview-wrap">
+         <img src="${slide.bgImageDataUrl}" alt="" />
+         <button class="btn-clear-img" data-act="clear-img" data-sid="${slide.id}">✕</button>
+       </div>`
+    : `<label class="upload-label">
+         &#8593; Upload Background Image
+         <input type="file" accept="image/*" style="display:none;"
+                data-act="upload-img" data-sid="${slide.id}" />
+       </label>`;
+
+  let fields = '';
+  if (slide.type === 'cover') {
+    fields = `
+      <div class="fgroup">
+        <span class="flabel">Headline</span>
+        <input class="finput" type="text" placeholder="Your main headline"
+               data-act="field" data-sid="${slide.id}" data-key="headline"
+               value="${esc(slide.headline)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Subtitle</span>
+        <input class="finput" type="text" placeholder="Supporting statement (optional)"
+               data-act="field" data-sid="${slide.id}" data-key="subtitle"
+               value="${esc(slide.subtitle)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Author / Brand name</span>
+        <input class="finput" type="text" placeholder="Your name"
+               data-act="field" data-sid="${slide.id}" data-key="authorName"
+               value="${esc(slide.authorName)}" />
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" data-act="bool" data-sid="${slide.id}" data-key="showLogo"
+               ${slide.showLogo ? 'checked' : ''} />
+        Show logo
+      </label>`;
+  } else if (slide.type === 'content') {
+    fields = `
+      <div class="fgroup">
+        <span class="flabel">Slide title</span>
+        <input class="finput" type="text" placeholder="Optional title"
+               data-act="field" data-sid="${slide.id}" data-key="contentTitle"
+               value="${esc(slide.contentTitle)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Body text (one item per line)</span>
+        <textarea class="ftextarea" placeholder="Type your bullet points or paragraph here..."
+                  data-act="field" data-sid="${slide.id}" data-key="contentBody"
+                  >${esc(slide.contentBody)}</textarea>
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" data-act="bool" data-sid="${slide.id}" data-key="bulletsMode"
+               ${slide.bulletsMode ? 'checked' : ''} />
+        Bullet points mode
+      </label>`;
+  } else {
+    fields = `
+      <div class="fgroup">
+        <span class="flabel">CTA Headline</span>
+        <input class="finput" type="text" placeholder="e.g. Ready to transform your school?"
+               data-act="field" data-sid="${slide.id}" data-key="ctaHeadline"
+               value="${esc(slide.ctaHeadline)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Subheading</span>
+        <input class="finput" type="text" placeholder="Short supporting sentence"
+               data-act="field" data-sid="${slide.id}" data-key="ctaSubheading"
+               value="${esc(slide.ctaSubheading)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Email</span>
+        <input class="finput" type="text" placeholder="your@email.com"
+               data-act="field" data-sid="${slide.id}" data-key="contactEmail"
+               value="${esc(slide.contactEmail)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">LinkedIn</span>
+        <input class="finput" type="text" placeholder="linkedin.com/in/..."
+               data-act="field" data-sid="${slide.id}" data-key="contactLinkedIn"
+               value="${esc(slide.contactLinkedIn)}" />
+      </div>
+      <div class="fgroup">
+        <span class="flabel">Extra line (website, phone, etc.)</span>
+        <input class="finput" type="text" placeholder="Optional"
+               data-act="field" data-sid="${slide.id}" data-key="contactExtra"
+               value="${esc(slide.contactExtra)}" />
+      </div>`;
+  }
+
+  return `
+    <div class="slide-card ${isActive ? 'active' : ''}" data-card-idx="${i}">
+      <div class="slide-card-header">
+        <span class="slide-num">${i + 1}</span>
+        <span class="slide-type-badge badge-${slide.type}">${badge}</span>
+        <span class="slide-headline-preview">${esc(preview) || '—'}</span>
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="btn-icon" data-act="move-up"   data-idx="${i}" title="Move up"   ${i === 0                 ? 'disabled' : ''}>↑</button>
+          <button class="btn-icon" data-act="move-down" data-idx="${i}" title="Move down" ${i === slides.length - 1 ? 'disabled' : ''}>↓</button>
+          <button class="btn-icon del" data-act="delete" data-sid="${slide.id}" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="slide-card-body">
+        ${fields}
+        <div class="section-sep"></div>
+        <span class="section-label">Appearance</span>
+        <div class="fgroup">
+          <span class="flabel">Background color</span>
+          <div class="swatch-row">
+            ${swatches}
+            <div class="swatch-custom" title="Custom color">
+              <input type="color" value="${slide.bgColor}"
+                     data-act="custom-color" data-sid="${slide.id}" />
+            </div>
+          </div>
+        </div>
+        <div class="fgroup">
+          <span class="flabel">Background image</span>
+          ${imgSection}
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" data-act="text-scheme" data-sid="${slide.id}"
+                 ${slide.textColorScheme === 'light' ? 'checked' : ''} />
+          White / light text
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" data-act="bool" data-sid="${slide.id}" data-key="showSlideNumber"
+                 ${slide.showSlideNumber ? 'checked' : ''} />
+          Show slide number
+        </label>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// FULL REFRESH
+// ════════════════════════════════════════════════════════════
+function refresh() {
+  renderEditor();
+  updatePreview();
+}
+
+// ════════════════════════════════════════════════════════════
+// LIVE PREVIEW (field input — fast path, skip editor rebuild)
+// ════════════════════════════════════════════════════════════
+function livePreview() {
+  updatePreview();
+  // Update preview counter/nav in case counts changed
+  document.getElementById('preview-counter').textContent =
+    slides.length ? `${activeIdx + 1} / ${slides.length}` : '— / —';
+}
+
+// ════════════════════════════════════════════════════════════
+// EVENT WIRING
+// ════════════════════════════════════════════════════════════
+
+// Add-slide buttons
+document.getElementById('btn-add-cover').addEventListener('click', () => {
+  slides.push(newSlide('cover'));
+  activeIdx = slides.length - 1;
+  refresh();
+});
+document.getElementById('btn-add-content').addEventListener('click', () => {
+  slides.push(newSlide('content'));
+  activeIdx = slides.length - 1;
+  refresh();
+});
+document.getElementById('btn-add-cta').addEventListener('click', () => {
+  slides.push(newSlide('cta'));
+  activeIdx = slides.length - 1;
+  refresh();
+});
+
+// Platform selector
+document.getElementById('platform-select').addEventListener('change', e => {
+  activePlatform = e.target.value;
+  livePreview();
+});
+
+// Prev / Next nav
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (activeIdx > 0) { activeIdx--; refresh(); }
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (activeIdx < slides.length - 1) { activeIdx++; refresh(); }
+});
+
+// Thumbnail clicks
+document.getElementById('preview-thumbs').addEventListener('click', e => {
+  const t = e.target.closest('[data-thumb]');
+  if (t) { activeIdx = parseInt(t.dataset.thumb); refresh(); }
+});
+
+// Card header → select slide
+document.getElementById('slides-list').addEventListener('click', e => {
+  // Skip if clicking inside card-actions or on interactive form elements
+  if (e.target.closest('.card-actions'))    return;
+  if (e.target.closest('.slide-card-body')) return;
+
+  const card = e.target.closest('.slide-card');
+  if (!card) return;
+  const idx = parseInt(card.dataset.cardIdx);
+  if (!isNaN(idx) && idx !== activeIdx) {
+    activeIdx = idx;
+    refresh();
+  }
+});
+
+// Slide list — action clicks
+document.getElementById('slides-list').addEventListener('click', e => {
+  const el  = e.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+
+  if (act === 'move-up') {
+    const i = parseInt(el.dataset.idx);
+    if (i > 0) {
+      [slides[i - 1], slides[i]] = [slides[i], slides[i - 1]];
+      if (activeIdx === i)      activeIdx--;
+      else if (activeIdx === i - 1) activeIdx++;
+      refresh();
+    }
+  }
+
+  if (act === 'move-down') {
+    const i = parseInt(el.dataset.idx);
+    if (i < slides.length - 1) {
+      [slides[i], slides[i + 1]] = [slides[i + 1], slides[i]];
+      if (activeIdx === i)      activeIdx++;
+      else if (activeIdx === i + 1) activeIdx--;
+      refresh();
+    }
+  }
+
+  if (act === 'delete') {
+    const sid = el.dataset.sid;
+    const i   = slides.findIndex(s => s.id === sid);
+    if (i === -1 || slides.length <= 1) return;
+    slides.splice(i, 1);
+    activeIdx = Math.min(activeIdx, slides.length - 1);
+    refresh();
+  }
+
+  if (act === 'set-color') {
+    const slide = slideById(el.dataset.sid);
+    if (!slide) return;
+    slide.bgColor = el.dataset.color;
+    slide.bgType  = 'color';
+    if (LIGHT_BG_HEX.has(slide.bgColor)) slide.textColorScheme = 'dark';
+    else slide.textColorScheme = 'light';
+    refresh();
+  }
+
+  if (act === 'clear-img') {
+    const slide = slideById(el.dataset.sid);
+    if (slide) { slide.bgImageDataUrl = null; slide.bgType = 'color'; refresh(); }
+  }
+});
+
+// Slide list — input events (live typing)
+document.getElementById('slides-list').addEventListener('input', e => {
+  const el  = e.target.closest('[data-act]') || e.target;
+  const act = el.dataset.act;
+  if (!act) return;
+
+  if (act === 'field') {
+    const slide = slideById(el.dataset.sid);
+    if (slide) {
+      slide[el.dataset.key] = e.target.value;
+      livePreview();
+      // Update headline preview in card header without full rebuild
+      const card = e.target.closest('.slide-card');
+      if (card) {
+        const prev = card.querySelector('.slide-headline-preview');
+        const val  = slide.headline || slide.contentTitle || slide.ctaHeadline || '—';
+        if (prev) prev.textContent = val.slice(0, 36) || '—';
+      }
+    }
+  }
+
+  if (act === 'bool') {
+    const slide = slideById(el.dataset.sid);
+    if (slide) { slide[el.dataset.key] = e.target.checked; livePreview(); }
+  }
+
+  if (act === 'text-scheme') {
+    const slide = slideById(el.dataset.sid);
+    if (slide) { slide.textColorScheme = e.target.checked ? 'light' : 'dark'; livePreview(); }
+  }
+
+  if (act === 'custom-color') {
+    const slide = slideById(el.dataset.sid);
+    if (slide) { slide.bgColor = e.target.value; slide.bgType = 'color'; livePreview(); }
+  }
+
+  if (act === 'upload-img') {
+    const file = e.target.files[0];
+    if (!file) return;
+    const slide = slideById(el.dataset.sid);
+    if (!slide) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      slide.bgImageDataUrl = ev.target.result;
+      slide.bgType = 'image';
+      refresh();
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Resize → re-scale preview
+window.addEventListener('resize', livePreview);
+
+// ════════════════════════════════════════════════════════════
+// EXPORT
+// ════════════════════════════════════════════════════════════
+document.getElementById('btn-export').addEventListener('click', exportAll);
+
+async function exportAll() {
+  if (!slides.length) { alert('Add at least one slide before exporting.'); return; }
+
+  const overlay    = document.getElementById('export-overlay');
+  const statusText = document.getElementById('export-status-text');
+  const bar        = document.getElementById('export-bar');
+
+  overlay.classList.remove('hidden');
+
+  const platform = PLATFORMS[activePlatform];
+
+  for (let i = 0; i < slides.length; i++) {
+    statusText.textContent = `Exporting slide ${i + 1} of ${slides.length}…`;
+    bar.style.width = Math.round((i / slides.length) * 100) + '%';
+
+    // Render into the off-screen stage
+    renderStage.style.width  = platform.w + 'px';
+    renderStage.style.height = platform.h + 'px';
+    renderStage.innerHTML    = slideHTML(slides[i], i, slides.length, platform);
+
+    // Allow the DOM to paint
+    await pause(110);
+
+    try {
+      const canvas = await html2canvas(renderStage, {
+        scale:       1,
+        useCORS:     true,
+        allowTaint:  false,
+        backgroundColor: null,
+        logging:     false,
+        width:       platform.w,
+        height:      platform.h,
+        windowWidth: platform.w,
+        windowHeight:platform.h,
+      });
+
+      await new Promise(resolve => {
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a   = document.createElement('a');
+          a.href     = url;
+          a.download = `hickman-carousel-${i + 1}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 800);
+          resolve();
+        }, 'image/png');
+      });
+    } catch (err) {
+      console.error('Export error on slide', i + 1, err);
+    }
+
+    await pause(180);
+  }
+
+  bar.style.width = '100%';
+  statusText.textContent = `Done! ${slides.length} slide${slides.length > 1 ? 's' : ''} downloaded.`;
+  await pause(1600);
+
+  overlay.classList.add('hidden');
+  // Restore preview
+  updatePreview();
+}
+
+function pause(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ════════════════════════════════════════════════════════════
+// ASSET PRELOAD
+// ════════════════════════════════════════════════════════════
+async function preloadLogo(src) {
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise((res, rej) => {
+      img.onload  = res;
+      img.onerror = rej;
+      img.src     = src;
+    });
+    const c = document.createElement('canvas');
+    c.width  = img.naturalWidth  || 180;
+    c.height = img.naturalHeight || 180;
+    c.getContext('2d').drawImage(img, 0, 0);
+    return c.toDataURL('image/png');
+  } catch {
+    return null;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+async function init() {
+  // Preload logo → data URL (needed for html2canvas)
+  const logoSrc = 'assets/AI%20CLASSROOM%20PRO%20%282048%20x%201152%20px%29%20%28180%20x%20180%20px%29%281%29.png';
+  logoDataUrl = await preloadLogo(logoSrc);
+
+  // Update header logo too
+  if (logoDataUrl) {
+    document.getElementById('header-logo-img').src = logoDataUrl;
+  }
+
+  // Preload fonts so html2canvas captures them
+  try {
+    await Promise.all([
+      document.fonts.load('800 80px Sora'),
+      document.fonts.load('700 56px Sora'),
+      document.fonts.load('600 32px Sora'),
+      document.fonts.load('700 28px "Space Grotesk"'),
+      document.fonts.load('500 24px "Space Grotesk"'),
+      document.fonts.load('400 28px "Space Grotesk"'),
+    ]);
+    await document.fonts.ready;
+  } catch (e) {
+    console.warn('Font preload issue:', e);
+  }
+  fontsReady = true;
+
+  // Seed with a default cover slide
+  const cover = newSlide('cover');
+  cover.headline  = 'Your Carousel Title';
+  cover.subtitle  = 'A short topic description';
+  slides.push(cover);
+  activeIdx = 0;
+
+  refresh();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
