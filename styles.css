@@ -207,37 +207,6 @@ button {
   margin-top: 1.8rem;
 }
 
-/* ---------- Newsletter signup ---------- */
-
-.signup-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.8rem;
-  max-width: 520px;
-}
-
-.signup-form input[type="email"] {
-  flex: 1 1 240px;
-  min-height: 50px;
-  padding: 0.85rem 1.1rem;
-  border: 1px solid rgba(20, 33, 61, 0.25);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-}
-
-.signup-form input[type="email"]:focus {
-  outline: 2px solid rgba(75, 136, 182, 0.35);
-  border-color: var(--accent);
-}
-
-.signup-micro {
-  margin: 0.7rem 0 0;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -409,6 +378,40 @@ button {
 .card-free {
   background: var(--accent-wash);
   border-color: rgba(36, 79, 136, 0.18);
+}
+
+/* ---------- Upcoming presentations ---------- */
+
+.talk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.talk-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+  align-items: baseline;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 1.35rem 1.5rem;
+}
+
+.talk-item h3 {
+  margin: 0;
+}
+
+.talk-item p {
+  margin: 0;
+}
+
+.talk-date {
+  font-weight: 600;
+  color: var(--accent-deep);
 }
 
 /* ---------- Lists ---------- */
@@ -717,12 +720,6 @@ button.button {
   fill: currentColor;
 }
 
-.social-image {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
 /* ---------- Animation ---------- */
 
 .page-hero,
@@ -778,6 +775,7 @@ button.button {
   .pilot-layout,
   .season-grid,
   .trust-strip,
+  .talk-item,
   .cards {
     grid-template-columns: 1fr;
   }
