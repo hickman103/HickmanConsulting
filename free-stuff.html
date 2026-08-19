@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thank You | Hickman Consulting LLC</title>
-    <meta name="description" content="Thank you for your inquiry to Hickman Consulting LLC." />
+    <title>Free Stuff | Hickman Consulting LLC</title>
+    <meta
+      name="description"
+      content="Free AI resources for educators — classroom-tested prompts, templates, and guides you can use tomorrow. No signup required."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -29,21 +32,81 @@
           <a href="index.html">Home</a>
           <a href="pilot-partnerships.html">Partnerships</a>
           <a href="inquiry.html">Work with Me</a>
-          <a href="free-stuff.html">Free Stuff</a>
+          <a class="current" href="free-stuff.html">Free Stuff</a>
         </nav>
       </header>
 
       <main>
         <section class="page-hero">
-          <h1>Got it. Talk soon.</h1>
+          <h1>Free stuff, no strings.</h1>
           <p class="hero-text">
-            Your inquiry is in. I read every message and will follow up personally using the
-            contact information you provided.
+            Everything here is classroom-tested and free to use. No email required, no signup
+            wall — grab what helps, ignore what doesn't, and share it with the teacher down the
+            hall.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="index.html">Back to Home</a>
+            <a
+              class="button button-secondary"
+              href="https://www.instagram.com/mrhickman_/"
+              target="_blank"
+              rel="noreferrer"
+              >Follow for new drops</a
+            >
           </div>
         </section>
+
+        <section class="section" id="resources">
+          <div class="section-heading">
+            <p class="eyebrow">The Resources</p>
+            <h2>Grab what you need.</h2>
+          </div>
+
+          <!--
+            TO ADD A RESOURCE: copy one .resource-card block below and fill in the five parts.
+              1. card-kicker  - the format (Prompt Pack, Template, Slides, Guide, Video)
+              2. h3           - the resource name
+              3. p.resource-date - the publish date, both in the text and the datetime attribute
+              4. p.muted      - one line on who it's for and what it does
+              5. the <a>      - href to the file (put PDFs in assets/) or to an external link
+            For a link that leaves the site (Google Doc, Drive, YouTube), keep
+            target="_blank" rel="noreferrer". For a file in this repo, delete both.
+            For something not ready yet, use the .resource-card.is-soon variant at the bottom.
+          -->
+
+          <div class="resource-grid">
+            <article class="resource-card">
+              <p class="card-kicker">Framework</p>
+              <h3>The AI Bagel Framework</h3>
+              <p class="resource-date"><time datetime="2026-08-19">19 August 2026</time></p>
+              <p class="muted">
+                Human &rarr; AI &rarr; Human. A three-step loop for using AI without handing over
+                your judgment — plus a worked example you can run in ten minutes.
+              </p>
+              <a class="card-cta" href="ai-bagel-framework.html">Read the framework &rarr;</a>
+            </article>
+
+            <article class="resource-card is-soon">
+              <p class="card-kicker">Coming soon</p>
+              <h3>More on the way</h3>
+              <p class="muted">
+                New resources drop here first, then get posted to Instagram. Follow along so you
+                catch them.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <div class="cta-band">
+          <h2>Want this built for your building?</h2>
+          <p>
+            These are the free versions of what I run with schools — PD days, coaching cycles, and
+            full-year partnerships. If your staff needs the real thing, let's talk.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="inquiry.html">Start the Conversation</a>
+            <a class="button button-secondary" href="pilot-partnerships.html">See the Model</a>
+          </div>
+        </div>
       </main>
 
       <footer class="site-footer">
@@ -103,5 +166,6 @@
         </div>
       </footer>
     </div>
+    <script src="script.js"></script>
   </body>
 </html>
