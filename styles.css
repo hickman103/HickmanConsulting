@@ -526,6 +526,23 @@ button {
   color: var(--ink);
 }
 
+.article-figure-wide {
+  width: min(960px, calc(100vw - 2.5rem));
+}
+
+.figure-scroll {
+  overflow-x: auto;
+}
+
+.figure-scroll img {
+  min-width: 560px;
+  max-width: 100%;
+}
+
+.figure-hint {
+  display: none;
+}
+
 .step-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -627,6 +644,65 @@ button {
 .callout p {
   margin: 0;
   color: var(--muted);
+}
+
+/* ---------- Prompt examples ---------- */
+
+.example-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.example {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.5rem;
+  background: var(--surface);
+}
+
+.example p {
+  margin: 0;
+}
+
+.example .muted {
+  margin-top: 0.7rem;
+}
+
+.example-prompt {
+  font-weight: 500;
+}
+
+.example-weak .example-prompt {
+  color: var(--muted);
+}
+
+.example-strong {
+  background: var(--accent-wash);
+  border-color: rgba(36, 79, 136, 0.18);
+}
+
+.numbered-list {
+  margin: 0;
+  padding-left: 1.35rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.numbered-list strong,
+.feature-list strong {
+  color: var(--ink);
+}
+
+.fine-print {
+  margin: 2rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 /* ---------- Lists ---------- */
@@ -1020,6 +1096,19 @@ button.button {
 
   .site-nav {
     gap: 0.9rem;
+  }
+
+  .article-figure-wide {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .figure-hint {
+    display: block;
+    margin: 0.9rem 0 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
   }
 
   .site-nav a {
