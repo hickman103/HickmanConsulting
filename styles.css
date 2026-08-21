@@ -537,6 +537,26 @@ button {
   width: min(960px, calc(100vw - 2.5rem));
 }
 
+.article-figure-portrait img {
+  max-width: 300px;
+}
+
+.article-prose p {
+  color: var(--muted);
+}
+
+.article-break {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--line);
+  letter-spacing: 0.4em;
+}
+
+.article-signoff {
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .figure-scroll {
   overflow-x: auto;
 }
