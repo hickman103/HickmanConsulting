@@ -414,6 +414,13 @@ button {
   color: var(--accent-deep);
 }
 
+.talk-cta {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
 /* ---------- Free resources ---------- */
 
 .resource-grid {
